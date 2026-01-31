@@ -1,26 +1,41 @@
 # FieldLogic (Field Survey Tool)
 
-FieldLogic is a tablet-first, offline-capable web application designed for complex field data gathering. It features a schema-driven form engine that handles conditional logic ("skipping") dynamically.
+FieldLogic is a tablet-first, offline-capable web application designed for complex field data gathering. It relies on a **Schema-Driven Architecture** where the UI and Logic are generated entirely from a JSON definition.
 
-## 🚀 Features implemented
-- **Schema-Driven Rendering:** Forms are generated entirely from a JSON definition (`survey_definition.json`).
-- **Logic Engine:** Robust conditional routing (branching logic) verified with TDD.
-- **Modern UI:** Clean, responsive interface using React and modern CSS.
-- **Offline-First Architecture:** Built with Astro and React for performance.
+## 🚀 Features
+
+### 1. Core Logic Engine
+- **Interpreter Pattern:** The `SurveyEngine` state machine navigates the survey based on the `survey_definition.json`.
+- **Conditional Routing:** Supports complex branching logic (e.g., *If "Unemployed", skip "Industry"*).
+- **Strict Typing:** Powered by a rigorous TypeScript schema (`src/types/schema.ts`).
+
+### 2. Offline-First Data Layer
+- **Dexie.js (IndexedDB):** All data is stored locally first.
+- **Separate Stores:**
+    - `responses`: Text-based answers.
+    - `blobs`: Heavy media files (Audio).
+
+### 3. Integrated Modules
+- **🎙️ Audio Recorder (Sidecar):** Records `audio/webm;codecs=opus` blobs directly to IndexedDB. Includes a "Flush to Cloud" sync stub.
+- **📉 Data Export:** Deterministic `SurveyFlattener` converts hierarchical JSON sessions into clean CSVs for analysis.
+- **📝 Transcription Review:** Dashboard with **Deep Linking** to VLC Media Player (`fieldlogic://`) for precise audio review.
 
 ## 🛠️ Project Structure
 
 ```
 field-logic/
 ├── src/
-│   ├── components/    # React Integration (SurveyWizard)
+│   ├── components/    # UI (AudioRecorder, SurveyWizard, TranscriptViewer)
 │   ├── data/          # JSON Survey Definitions
 │   ├── lib/
-│   │   ├── engine.ts  # Core Logic Engine (The "Brain")
-│   │   └── types.ts   # TypeScript Interfaces
-│   ├── styles/        # Global CSS
+│   │   ├── SurveyEngine.ts  # Core State Machine
+│   │   ├── db.ts            # Dexie.js Database
+│   │   ├── flattener.ts     # CSV Export Logic
+│   │   └── sync.ts          # Cloud Sync Logic
+│   ├── types/         # Strict Schema Definitions
 │   └── pages/         # Astro Routes
-└── tests/             # Vitest Unit Tests
+├── launcher.py        # VLC Bridge Script (Python)
+└── setup_vlc_link.reg # Windows Registry keys for VLC
 ```
 
 ## 🏁 Getting Started
@@ -39,30 +54,21 @@ Start the local development server:
 ```bash
 npm run dev
 ```
-Visit http://localhost:4321 to see the survey in action.
+Visit http://localhost:4321 to survey.
 
 ### Testing
-Run the test suite to verify the Logic Engine:
+Run the comprehensive test suite (Engine + Flattener):
 ```bash
 npm test
 ```
 
-## 🔮 Roadmap & Planned Features
+## 🔌 Integrations
 
-The following modules are specified for future implementation to complete the "FieldLogic" ecosystem:
-
-### 1. Data Export & Integrity (`feature-export.md`)
-- **Deterministic Flattener:** Convert hierarchical JSON responses into flat CSV/SAV files.
-- **Strict Typing:** Ensure export formats match the schema definitions.
-
-### 2. Audio "Sidecar" Storage (`feature-audio.md`)
-- **Local Recording:** Capture audio blobs (Opus/WebM) directly in the browser.
-- **IndexedDB Storage:** Temporary local storage to avoid data loss.
-- **Zero-Cost Sync:** "Flush" audio files to Google Drive/External Storage instead of expensive app servers.
-
-### 3. Automated Transcription (`feature-transcription.md`)
-- **Whisper Integration:** Generate time-indexed transcripts from audio.
-- **Deep Linking:** Control VLC Media Player from the dashboard for precise audio review.
+### Setting up VLC Deep Linking (Windows)
+To enable the "Open in VLC" feature from the Transcription Dashboard:
+1.  Edit `launcher.py` and ensure `VLC_PATH` matches your VLC installation.
+2.  Double-click `setup_vlc_link.reg` to register the `fieldlogic://` protocol.
+3.  Place your survey media files in `C:\Data\surveys` (or update `MEDIA_DIR` in the script).
 
 ## 📄 License
 Private / Proprietary
