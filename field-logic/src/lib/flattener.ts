@@ -1,5 +1,7 @@
 import type { SurveyDefinition, UserSession } from '../types/schema';
 
+export const NA_RESPONSE = 'N/A';
+
 export class SurveyFlattener {
     constructor(private definition: SurveyDefinition) { }
 
@@ -21,7 +23,7 @@ export class SurveyFlattener {
                 return answer !== undefined ? answer : null;
             } else {
                 // If NOT visited -> Skipped
-                return 'N/A';
+                return NA_RESPONSE;
             }
         });
     }

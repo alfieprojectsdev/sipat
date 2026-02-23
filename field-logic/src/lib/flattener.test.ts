@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { SurveyFlattener } from './flattener';
+import { SurveyFlattener, NA_RESPONSE } from './flattener';
 import type { SurveyDefinition, UserSession } from '../types/schema';
 
 const mockSurvey: SurveyDefinition = {
@@ -60,7 +60,7 @@ describe('SurveyFlattener', () => {
         const row = flattener.flattenResponse(session);
 
         // q2 should be SKIPPED
-        expect(row[2]).toBe('N/A');
+        expect(row[2]).toBe(NA_RESPONSE);
     });
 
     it('toCSV should generate a valid CSV string', () => {
