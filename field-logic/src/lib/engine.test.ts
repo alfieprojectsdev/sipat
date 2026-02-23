@@ -95,4 +95,36 @@ describe('SurveyEngine', () => {
         expect(session.visitedNodes).toContain('q1');
         expect(session.visitedNodes).toContain('q2_yes');
     });
+
+    it('should fallback to default route for unknown operators', () => {
+        const surveyWithUnknownOperator: SurveyDefinition = {
+            ...mockSurvey,
+            nodes: [
+                {
+                    id: "start",
+                    type: "info",
+                    content: { text: "Welcome" },
+                    routing: { default: "q_unknown" }
+                },
+                {
+                    id: "q_unknown",
+                    type: "text",
+                    content: { question: "Unknown?" },
+                    routing: {
+                        rules: [
+                            { operator: "non_existent_op", value: "some_value", target: "q2_yes" }
+                        ],
+                        default: "end"
+                    }
+                },
+                ...mockSurvey.nodes.filter(n => n.id !== "start" && n.id !== "q1")
+            ]
+        };
+        const engineWithUnknown = new SurveyEngine(surveyWithUnknownOperator, 'test_session');
+        engineWithUnknown.start();
+        engineWithUnknown.submitAnswer(null); // move to q_unknown
+
+        const node = engineWithUnknown.submitAnswer("any answer");
+        expect(node?.id).toBe('end');
+    });
 });
