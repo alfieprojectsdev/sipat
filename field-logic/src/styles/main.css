@@ -9,11 +9,16 @@
   --radius-lg: 1rem;
   --radius-md: 0.5rem;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
   background-color: var(--color-bg);
   color: var(--color-text);
   margin: 0;
@@ -120,6 +125,51 @@ button:disabled {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* TranscriptViewer Styles */
+.transcript-viewer {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: monospace;
+}
+
+.transcript-viewer .segment-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  background-color: transparent;
+}
+
+.transcript-viewer .segment-item.low-confidence {
+  background-color: #fef3c7;
+}
+
+.transcript-viewer .segment-timestamp {
+  color: var(--color-text-muted);
+  margin-right: 10px;
+  user-select: none;
+}
+
+.transcript-viewer .segment-text {
+  margin-right: 10px;
+}
+
+.transcript-viewer .segment-actions {
+  float: right;
+}
+
+.transcript-viewer .action-btn {
+  margin-right: 5px;
+}
+
+.transcript-viewer .deep-link {
+  text-decoration: none;
 }
