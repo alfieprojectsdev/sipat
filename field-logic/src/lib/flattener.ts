@@ -1,49 +1,55 @@
-import type { SurveyDefinition, UserSession } from '../types/schema';
+import type { SurveyDefinition, UserSession } from "../types/schema";
 
 export class SurveyFlattener {
-    constructor(private definition: SurveyDefinition) { }
+  private headers: string[];
 
-    generateHeaderMap(): string[] {
-        // Rule 1: Every node ID becomes a column header
-        return this.definition.nodes.map(node => node.id);
-    }
+  constructor(private definition: SurveyDefinition) {
+    this.headers = this.definition.nodes.map((node) => node.id);
+  }
 
-    flattenResponse(session: UserSession): any[] {
-        const headers = this.generateHeaderMap();
+  generateHeaderMap(): string[] {
+    // Rule 1: Every node ID becomes a column header
+    return [...this.headers];
+  }
 
-        return headers.map(nodeId => {
-            // Logic Check
-            const visited = session.visitedNodes.includes(nodeId);
-            const answer = session.responses[nodeId];
+  flattenResponse(session: UserSession): any[] {
+    const headers = this.headers;
 
-            if (visited) {
-                // If visited but no answer, return null (undefined translates to null logic here)
-                return answer !== undefined ? answer : null;
-            } else {
-                // If NOT visited -> Skipped
-                return 'N/A';
-            }
-        });
-    }
+    return headers.map((nodeId) => {
+      // Logic Check
+      const visited = session.visitedNodes.includes(nodeId);
+      const answer = session.responses[nodeId];
 
-    toCSV(sessions: UserSession[]): string {
-        const headers = this.generateHeaderMap();
-        const rows = sessions.map(session => this.flattenResponse(session));
+      if (visited) {
+        // If visited but no answer, return null (undefined translates to null logic here)
+        return answer !== undefined ? answer : null;
+      } else {
+        // If NOT visited -> Skipped
+        return "N/A";
+      }
+    });
+  }
 
-        const headerRow = headers.join(',');
+  toCSV(sessions: UserSession[]): string {
+    const headers = this.generateHeaderMap();
+    const rows = sessions.map((session) => this.flattenResponse(session));
 
-        const dataRows = rows.map(row => {
-            return row.map((cell: any) => {
-                if (cell === null || cell === undefined) return '';
-                const str = String(cell);
-                // Escape quotes and wrap in quotes if contains comma or newline
-                if (str.includes(',') || str.includes('\n') || str.includes('"')) {
-                    return `"${str.replace(/"/g, '""')}"`;
-                }
-                return str;
-            }).join(',');
-        });
+    const headerRow = headers.join(",");
 
-        return [headerRow, ...dataRows].join('\n');
-    }
+    const dataRows = rows.map((row) => {
+      return row
+        .map((cell: any) => {
+          if (cell === null || cell === undefined) return "";
+          const str = String(cell);
+          // Escape quotes and wrap in quotes if contains comma or newline
+          if (str.includes(",") || str.includes("\n") || str.includes('"')) {
+            return `"${str.replace(/"/g, '""')}"`;
+          }
+          return str;
+        })
+        .join(",");
+    });
+
+    return [headerRow, ...dataRows].join("\n");
+  }
 }
