@@ -57,14 +57,21 @@ export const TranscriptViewer: React.FC<Props> = ({ data }) => {
                             </button>
 
                             {/* Secondary: VLC Deep Link */}
-                            <a
-                                href="#"
+                            <button
+                                type="button"
                                 onClick={(e) => handleDeepLink(e, seg.start)}
                                 title="Open in VLC"
-                                style={{ textDecoration: 'none' }}
+                                style={{
+                                    textDecoration: 'none',
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: 0,
+                                    font: 'inherit',
+                                    cursor: 'pointer'
+                                }}
                             >
                                 🚀
-                            </a>
+                            </button>
                         </div>
                     </div>
                 ))}
