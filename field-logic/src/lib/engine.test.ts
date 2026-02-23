@@ -95,4 +95,8 @@ describe('SurveyEngine', () => {
         expect(session.visitedNodes).toContain('q1');
         expect(session.visitedNodes).toContain('q2_yes');
     });
+
+    it('should throw an error if submitting answer before starting survey', () => {
+        expect(() => engine.submitAnswer('test')).toThrow('Survey not active');
+    });
 });
