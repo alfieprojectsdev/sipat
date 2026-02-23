@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { SurveyEngine } from '../lib/engine';
-import type { SurveyDefinition, SurveyNode } from '../lib/types';
+import { SurveyEngine } from '../lib/SurveyEngine';
+import type { SurveyDefinition, SurveyNode } from '../types/schema';
 import '../styles/main.css';
 
 interface Props {
@@ -30,7 +30,7 @@ export const SurveyWizard: React.FC<Props> = ({ definition }) => {
             return;
         }
 
-        const nextNode = engine.next(inputValue);
+        const nextNode = engine.submitAnswer(inputValue);
         setCurrentNode(nextNode);
         setInputValue(null); // Reset input for next question
     };
