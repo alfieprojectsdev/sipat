@@ -38,9 +38,10 @@ export const AudioRecorder: React.FC<Props> = ({ sessionId, nodeId, onRecordingC
                 setAudioUrl(url);
 
                 // Save to Dexie DB
-                await saveAudio(sessionId, nodeId, blob);
-                // We pass the nodeId as the "key" reference for now
-                onRecordingComplete(nodeId);
+                const blobKey = await saveAudio(sessionId, nodeId, blob);
+
+                // We pass the unique blobKey reference instead of nodeId
+                onRecordingComplete(blobKey);
 
                 // Stop all tracks
                 stream.getTracks().forEach(track => track.stop());

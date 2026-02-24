@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { SurveyEngine } from '../lib/engine';
-import type { SurveyDefinition, SurveyNode } from '../lib/types';
+import { SurveyEngine } from '../lib/SurveyEngine';
+import type { SurveyDefinition, SurveyNode } from '../types/schema';
+import { AudioRecorder } from './AudioRecorder';
 import '../styles/main.css';
 
 interface Props {
@@ -30,7 +31,7 @@ export const SurveyWizard: React.FC<Props> = ({ definition }) => {
             return;
         }
 
-        const nextNode = engine.next(inputValue);
+        const nextNode = engine.submitAnswer(inputValue);
         setCurrentNode(nextNode);
         setInputValue(null); // Reset input for next question
     };
@@ -48,8 +49,10 @@ export const SurveyWizard: React.FC<Props> = ({ definition }) => {
         return <div className="survey-container">Loading...</div>;
     }
 
+    const { sessionId } = engine.getSession();
+
     const renderContent = () => {
-        const { type, content } = currentNode;
+        const { type, content, id: nodeId } = currentNode;
 
         switch (type) {
             case 'info':
@@ -113,6 +116,24 @@ export const SurveyWizard: React.FC<Props> = ({ definition }) => {
                                 {content.label_false || 'No'}
                             </button>
                         </div>
+                    </div>
+                );
+
+            case 'audio':
+                return (
+                    <div>
+                        <h1>{content.question}</h1>
+                        {content.helper_text && <p className="helper">{content.helper_text}</p>}
+                        <AudioRecorder
+                            sessionId={sessionId}
+                            nodeId={nodeId}
+                            onRecordingComplete={(blobKey) => handleChoiceSelect(blobKey)}
+                        />
+                        {inputValue && (
+                            <p style={{ marginTop: '0.5rem', color: '#10b981', fontWeight: '500' }}>
+                                ✓ Recording captured
+                            </p>
+                        )}
                     </div>
                 );
 
