@@ -80,4 +80,41 @@ describe('SurveyFlattener', () => {
         // Let's expect basic quoting for commas
         expect(lines[1]).toContain('"Hello, World"');
     });
+
+    it('toCSV should escape double quotes correctly', () => {
+        const session: UserSession = {
+            sessionId: 'sess3',
+            visitedNodes: ['start', 'q2', 'end'],
+            responses: { 'q2': 'He said "Hello"' }
+        };
+        const csv = flattener.toCSV([session]);
+        const lines = csv.split('\n');
+        // Expect: ..., "He said ""Hello""", ...
+        expect(lines[1]).toContain('"He said ""Hello"""');
+    });
+
+    it('toCSV should handle newlines by wrapping in quotes', () => {
+        const session: UserSession = {
+            sessionId: 'sess4',
+            visitedNodes: ['start', 'q2', 'end'],
+            responses: { 'q2': 'Line 1\nLine 2' }
+        };
+        const csv = flattener.toCSV([session]);
+
+        // Since the value contains a newline, it should be wrapped in quotes
+        expect(csv).toContain('"Line 1\nLine 2"');
+    });
+
+    it('toCSV should handle mixed special characters (comma, quote, newline)', () => {
+        const session: UserSession = {
+            sessionId: 'sess5',
+            visitedNodes: ['start', 'q2', 'end'],
+            responses: { 'q2': 'Line 1, "quote"\nLine 2' }
+        };
+        const csv = flattener.toCSV([session]);
+
+        // Expect: "Line 1, ""quote""\nLine 2"
+        // Note: internal quotes are doubled
+        expect(csv).toContain('"Line 1, ""quote""\nLine 2"');
+    });
 });
