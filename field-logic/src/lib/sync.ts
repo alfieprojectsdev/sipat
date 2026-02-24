@@ -20,8 +20,8 @@ export const flushAudioBlobs = async (token: string = 'test_token') => {
     const results = [];
 
     for (const record of unsyncedBlobs) {
-        const { sessionId, nodeId, blob } = record;
-        const filename = `${sessionId}_${nodeId}.webm`;
+        const { id, sessionId, nodeId, blob } = record;
+        const filename = `${id}.webm`;
 
         try {
             // A. Upload
@@ -36,15 +36,15 @@ export const flushAudioBlobs = async (token: string = 'test_token') => {
             await saveResponse(sessionId, nodeId, metadata);
 
             // C. Delete local blob (free space)
-            // Using compound key [sessionId, nodeId]
-            await db.blobs.where({ sessionId, nodeId }).delete();
+            // Using the unique primary key 'id'
+            await db.blobs.delete(id);
 
             console.log(`Synced & Flushed: ${filename}`);
-            results.push({ sessionId, nodeId, status: 'synced', url });
+            results.push({ id, sessionId, nodeId, status: 'synced', url });
 
         } catch (e) {
             console.error(`Failed to sync ${filename}`, e);
-            results.push({ sessionId, nodeId, status: 'failed', error: e });
+            results.push({ id, sessionId, nodeId, status: 'failed', error: e });
         }
     }
     return results;
