@@ -65,6 +65,15 @@ describe('SurveyEngine', () => {
         expect(node.id).toBe('start');
     });
 
+    it('should throw an error if the survey has no nodes', () => {
+        const emptySurvey: SurveyDefinition = {
+            ...mockSurvey,
+            nodes: []
+        };
+        const engine = new SurveyEngine(emptySurvey);
+        expect(() => engine.start()).toThrowError('Survey has no nodes');
+    });
+
     it('should navigate to next node via default route', () => {
         engine.start();
         const node = engine.submitAnswer(null); // 'info' type has no answer
