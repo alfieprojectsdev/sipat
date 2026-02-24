@@ -21,11 +21,29 @@ def main():
     filename = query.get('file', [''])[0]
     timestamp = query.get('t', ['0'])[0]
 
+    # Validate timestamp
+    try:
+        float(timestamp)
+    except ValueError:
+        print("Error: Invalid timestamp")
+        return
+
     if not filename:
         print("Error: No filename provided")
         return
 
-    file_path = os.path.join(MEDIA_DIR, filename)
+    # Security check: Prevent path traversal
+    base_dir = os.path.abspath(MEDIA_DIR)
+    file_path = os.path.abspath(os.path.join(base_dir, filename))
+
+    try:
+        if os.path.commonpath([base_dir, file_path]) != base_dir:
+            print("Error: Invalid filename (path traversal detected)")
+            return
+    except ValueError:
+        # Handles cases like different drives on Windows
+        print("Error: Invalid filename (path traversal detected)")
+        return
 
     # 2. Launch VLC
     # vlc "path" --start-time=X
