@@ -60,6 +60,10 @@ describe('SurveyEngine', () => {
         engine = new SurveyEngine(mockSurvey, 'test_session');
     });
 
+    it('should throw an error if getCurrentNode is called before start', () => {
+        expect(() => engine.getCurrentNode()).toThrow('Survey not started');
+    });
+
     it('should start at the first node', () => {
         const node = engine.start();
         expect(node.id).toBe('start');
